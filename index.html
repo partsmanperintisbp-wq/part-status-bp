@@ -39,17 +39,18 @@ details{margin-top:8px;font-size:13px}
 summary{cursor:pointer;font-weight:900}
 ul{margin:6px 0 0;padding-left:18px}
 .ft{color:var(--mu);font-size:12px;margin-top:26px;line-height:1.7}
-dialog{border:3px solid var(--ink);background:var(--card);color:var(--ink);max-width:460px;width:92%;padding:16px}dialog::backdrop{background:#0008}dialog h2{margin:0;font-size:18px}label{display:block;font-size:12px;font-weight:900;margin:8px 0 2px}label input,label select,label textarea{width:100%;font:inherit;border:2px solid var(--ink);background:var(--bg);color:var(--ink);padding:6px 8px;border-radius:2px}.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.ed{margin-top:10px;font-size:13px;padding:5px 10px}.mode{padding:10px 14px;border:2px dashed var(--ink);margin-bottom:12px;font-weight:900;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}#em{color:var(--no);font-weight:900;font-size:13px;margin:8px 0 0}</style></head><body>
+dialog{border:3px solid var(--ink);background:var(--card);color:var(--ink);max-width:460px;width:92%;padding:16px}dialog::backdrop{background:#0008}dialog h2{margin:0;font-size:18px}label{display:block;font-size:12px;font-weight:900;margin:8px 0 2px}label input,label select,label textarea{width:100%;font:inherit;border:2px solid var(--ink);background:var(--bg);color:var(--ink);padding:6px 8px;border-radius:2px}.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.ed{margin-top:10px;font-size:13px;padding:5px 10px}.mode{padding:10px 14px;border:2px dashed var(--ink);margin-bottom:12px;font-weight:900;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}#em{color:var(--no);font-weight:900;font-size:13px;margin:8px 0 0}.ins{font-size:12px;font-weight:900;color:var(--mu);margin-top:6px}#ins button{font-size:12px;padding:5px 10px}.tg{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.tg b{background:var(--ink);color:var(--bg);font-weight:900;font-size:13px;padding:3px 10px;letter-spacing:.04em}.tg span{font-size:12px;font-weight:900;color:var(--mu)}</style></head><body>
 <div class="tape"></div>
 <header><div class="sun"></div><h1>Status Part<small>BODY &amp; PAINT</small></h1></header>
 <main>
 <div class="kpi" id="kpi"></div>
 <div class="alert" id="al"></div>
 <div id='ed'></div>
+<div class="bar" id="ins"></div>
 <div class="bar" id="bar"></div>
 <div class="grid" id="g"></div>
 
-<p class="ft">TA = tanggal part ready semua. ETD = estimasi tanggal kedatangan part lengkap. Format tanggal sumber (ddmmyy) sudah diubah ke tanggal biasa. Kolom A pada spreadsheet berisi arsip lama (sekitar 17 unit, 2022 sampai 2025) dan tidak ditampilkan. Data dibaca langsung dari spreadsheet PART STATS dan diperbarui otomatis setiap 1 menit. Status dihitung dari TA dan ETD: Part siap bila TA sudah terisi dan tidak ada item tambahan yang belum ada TA. Kolom A (arsip lama) tidak ditampilkan. Warna sel tidak dibaca.</p>
+<p class="ft">TA = tanggal part ready semua. ETD = estimasi tanggal kedatangan part lengkap. Format tanggal sumber (ddmmyy) sudah diubah ke tanggal biasa. Kolom A pada spreadsheet berisi arsip lama (sekitar 17 unit, 2022 sampai 2025) dan tidak ditampilkan. Data dibaca langsung dari spreadsheet PART STATS dan diperbarui otomatis setiap 2 menit. Setiap tab spreadsheet adalah satu asuransi. Tab SPK Ditahan dan PART YANG SUDAH DIAMBIL tidak dibaca. Nopol yang sama dalam satu asuransi digabung menjadi satu unit, dan SPK berikutnya dianggap part tambahan. Status dihitung dari TA dan ETD: Part siap bila TA sudah terisi dan tidak ada item tambahan yang belum ada TA. Kolom A yang berisi arsip lama bertumpuk (beberapa SPK dalam satu kolom) tidak ditampilkan. Warna sel tidak dibaca.</p>
 </main>
 <script type='application/json' id='data'>[
 ["2026-01-25","BK 1540 AFY","r","2026-01-27","","Spoiler terpakai ke BK 1618 PV. Hubungi Partman jika perlu pesan ulang.",3,"Moulding Bumper FR RH|Moulding Bumper RR RH|Spoiler Bumper FR"],
@@ -83,9 +84,9 @@ dialog{border:3px solid var(--ink);background:var(--card);color:var(--ink);max-w
 function csv(t){const r=[];let row=[],c='',q=false;for(let i=0;i<t.length;i++){const ch=t[i];if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}else if(ch=='"')q=true;else if(ch==','){row.push(c);c=''}else if(ch=='\n'){row.push(c);r.push(row);row=[];c=''}else if(ch!='\r')c+=ch}row.push(c);r.push(row);return r}
 function dt(t){t=t||'';let d,m,y,k=t.match(/(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})/);if(k){d=k[1];m=k[2];y=k[3]}else{const s=t.replace(/\D/g,'');if(s.length==6){d=s.slice(0,2);m=s.slice(2,4);y=s.slice(4)}else return ''}
 y=y.length==2?'20'+y:y;if(+m<1||+m>12||+d<1||+d>31)return '';return y+'-'+m.padStart(2,'0')+'-'+d.padStart(2,'0')}
-function parse(g){const out=[];const r0=g.findIndex(r=>r.some((v,i)=>i>0&&/^SPK\s*TGL/i.test((v||'').trim())));if(r0<0)return out;
+function parse(g){const out=[];const r0=g.findIndex(r=>r.some(v=>/^SPK\s*TGL/i.test((v||'').trim())));if(r0<0)return out;
 const W=Math.max(...g.map(r=>r.length));
-for(let c=1;c<W;c++){const col=g.slice(r0).map(r=>(r[c]||'').trim());if(!/^SPK/i.test(col[0]))continue;
+for(let c=0;c<W;c++){const col=g.slice(r0).map(r=>(r[c]||'').trim());if(!/^SPK/i.test(col[0]))continue;if(c==0&&col.filter(v=>/^SPK/i.test(v)).length>1)continue;
 const pm=(col[1]||'').match(/[A-Z]{1,2}\s*\d{1,4}\s*[A-Z]{1,3}/),plate=pm?pm[0].replace(/\s+/g,' '):(col[1]||'-');
 let parts=[],ta='',etd='',notes=[],pend=0;
 for(const x of col.slice(2)){if(!x)continue;
@@ -99,31 +100,44 @@ if(st=='t'&&pend>0)notes.push(pend+' item tambahan belum ada TA.');
 if(st=='b'&&!etd)notes.push('Belum ada TA dan ETD.');
 out.push([dt(col[0]),plate,st,ta,etd,notes.join(' '),parts.length,parts.join('|')])}
 return out}
-const SID='1QuoJgbu_hpbP6kE3fu2Ox1ajt0GRnHbs8OFJuvKTso0',GID='0';
-const URL_CSV='https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:csv&headers=0&gid='+GID;
-let D=JSON.parse(document.getElementById('data').textContent),live=false,upd=null,err=false,f='x',q='';
+const SID='1QuoJgbu_hpbP6kE3fu2Ox1ajt0GRnHbs8OFJuvKTso0';
+const TABS=['PRIBADI','RAMAYANA','OONA / ABDA','ASTRA B','MSIG','MEGA SYARIAH','TOB','ZURICH','ACA','SINARMAS','MAG','SOMPO','SAHABAT','HARTA','KSK / SUNDAY','RAMA SATRIA','RAKSA','TOKYO MARINE','PAN FIC','JASINDO','WAHANA TATA'];
+const urlOf=n=>'https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:csv&headers=0&sheet='+encodeURIComponent(n);
+let D=JSON.parse(document.getElementById('data').textContent).map(x=>x.concat('PRIBADI')),cache={},bad=[],okN=0,live=false,upd=null,f='x',q='',ins='all';
 const NOW=()=>new Date(),day=(a,b)=>a&&b?Math.round((new Date(b)-new Date(a))/864e5):null;
 const fd=s=>s?new Date(s).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):'-';
 const ST={r:['SIAP','Part siap','var(--ok)'],t:['TUNGGU','Menunggu','var(--wt)'],b:['BELUM','Belum ada TA','var(--no)']};
-const $=i=>document.getElementById(i);
-function kpi(){const c=s=>D.filter(x=>x[2]==s).length,op=D.filter(x=>x[2]!='r'),n=NOW();
-const old=op.filter(x=>x[0]).sort((a,b)=>a[0]<b[0]?-1:1)[0],etd=D.filter(x=>x[4]&&day(n,x[4])>=0).sort((a,b)=>a[4]<b[4]?1:-1)[0];
-$('kpi').innerHTML=[[D.length,'Unit di papan'],[D.reduce((a,x)=>a+x[6],0),'Total item part'],[c('r'),'Part siap'],[c('t'),'Masih menunggu'],[c('b'),'Belum ada TA']].map(k=>`<div class="k"><b>${k[0]}</b><span>${k[1]}</span></div>`).join('');
-$('al').textContent=(old?`Terlama belum tuntas: ${old[1]} sejak ${fd(old[0])} (${day(old[0],n)} hari).`:'Semua unit part sudah siap.')+(etd?` ETD terjauh: ${fd(etd[4])}, ${day(n,etd[4])} hari lagi.`:'')}
+const $=i=>document.getElementById(i),S=()=>ins=='all'?D:D.filter(x=>x[8]==ins);
+function merge(R){const m={},o=[];R.forEach(x=>{const k=x[8]+'|'+x[1];(m[k]=m[k]||(o.push(k),[])).push(x)});
+return o.map(k=>{const a=m[k].slice().sort((p,q)=>(p[0]||p[3]||'9')<(q[0]||q[3]||'9')?-1:1),h=a[0];if(a.length==1)return h;
+const ta=a.map(x=>x[3]).sort().pop()||'',etd=a.map(x=>x[4]).sort().pop()||'',st=a.every(x=>x[2]=='r')?'r':a.every(x=>x[2]=='b')?'b':'t',
+nt=[h[5]].concat(a.slice(1).map(x=>`Part tambahan (SPK ${x[0]?fd(x[0]):'tanpa tanggal'}): ${x[6]} item, ${x[2]=='r'?'sudah siap':'belum siap'}.${x[5]?' '+x[5]:''}`)).filter(Boolean).join(' '),
+pt=[h[7]].concat(a.slice(1).map(x=>x[7].split('|').filter(Boolean).map(i=>i+' (tambahan)').join('|'))).filter(Boolean).join('|');
+return [h[0],h[1],st,ta,etd,nt,a.reduce((t,x)=>t+x[6],0),pt,h[8],a.length]})}
+D=merge(D);
+function kpi(){const A=S(),c=s=>A.filter(x=>x[2]==s).length,op=A.filter(x=>x[2]!='r'),n=NOW();
+const old=op.filter(x=>x[0]).sort((a,b)=>a[0]<b[0]?-1:1)[0],etd=A.filter(x=>x[4]&&day(n,x[4])>=0).sort((a,b)=>a[4]<b[4]?1:-1)[0];
+$('kpi').innerHTML=[[A.length,'Unit'],[A.reduce((a,x)=>a+x[6],0),'Total item part'],[c('r'),'Part siap'],[c('t'),'Masih menunggu'],[c('b'),'Belum ada TA']].map(k=>`<div class="k"><b>${k[0]}</b><span>${k[1]}</span></div>`).join('');
+$('al').textContent=(ins=='all'?'Semua asuransi. ':ins+'. ')+(old?`Terlama belum tuntas: ${old[1]} sejak ${fd(old[0])} (${day(old[0],n)} hari).`:'Semua unit part sudah siap.')+(etd?` ETD terjauh: ${fd(etd[4])}, ${day(n,etd[4])} hari lagi.`:'')}
 function status(){const t=upd?upd.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}):'';
-$('ed').innerHTML='<div class="mode"><span>'+(live?'Terhubung ke spreadsheet. Terakhir diperbarui '+t+(err?' (gagal menyegarkan, memakai data sebelumnya).':'.'):'Spreadsheet tidak terbaca. Menampilkan data cadangan per 12 Okt 2026.')+'</span><button id="rf">Muat ulang</button></div>'}
-function draw(){const bar=$('bar');if(!bar.firstChild){bar.innerHTML=[['x','Semua'],['r','Part siap'],['t','Menunggu'],['b','Belum ada TA']].map(a=>`<button data-f="${a[0]}">${a[1]}</button>`).join('')+'<input id="q" placeholder="Cari nopol atau nama part" aria-label="Cari">';$('q').oninput=e=>{q=e.target.value.toLowerCase();draw()}}
+$('ed').innerHTML='<div class="mode"><span>'+(live?`Terhubung ke spreadsheet: ${okN} dari ${TABS.length} tab terbaca. Terakhir diperbarui ${t}.`+(bad.length?' Tidak terbaca: '+bad.join(', ')+'.':''):'Spreadsheet tidak terbaca. Menampilkan data cadangan per 12 Okt 2026.')+'</span><button id="rf">Muat ulang</button></div>'}
+function chips(){const g={};D.forEach(x=>g[x[8]]=(g[x[8]]||0)+1);const n=D.length;
+$('ins').innerHTML=`<button data-i="all" class="${ins=='all'?'on':''}">Semua asuransi (${n})</button>`+Object.keys(g).map(k=>`<button data-i="${k}" class="${ins==k?'on':''}">${k} (${g[k]})</button>`).join('')}
+function draw(){const bar=$('bar');if(!bar.firstChild){bar.innerHTML=[['x','Semua status'],['r','Part siap'],['t','Menunggu'],['b','Belum ada TA']].map(a=>`<button data-f="${a[0]}">${a[1]}</button>`).join('')+'<input id="q" placeholder="Cari nopol atau nama part" aria-label="Cari">';$('q').oninput=e=>{q=e.target.value.toLowerCase();draw()}}
 bar.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.f==f));
-const rk={b:0,t:1,r:2},n=NOW(),L=D.filter(x=>(f=='x'||x[2]==f)&&(x[1]+x[7]).toLowerCase().includes(q)).sort((a,b)=>rk[a[2]]-rk[b[2]]||(a[2]=='r'?(b[0]>a[0]?1:-1):(a[0]<b[0]?-1:1)));
+const rk={b:0,t:1,r:2},n=NOW(),L=S().filter(x=>(f=='x'||x[2]==f)&&(x[1]+x[7]+x[8]).toLowerCase().includes(q)).sort((a,b)=>rk[a[2]]-rk[b[2]]||(a[2]=='r'?(b[0]>a[0]?1:-1):(a[0]<b[0]?-1:1)));
 $('g').innerHTML=L.map(x=>{const s=ST[x[2]],lt=day(x[0],x[3]),age=day(x[0],n);
-return `<div class="c" style="--s:${s[2]}"><div class="top"><span class="pl">${x[1]}</span><span class="st"><i>${s[0]}</i>${s[1]}</span></div>
+return `<div class="c" style="--s:${s[2]}"><div class="tg"><b>${x[8]}</b>${x[9]>1?`<span>${x[9]} SPK, ada part tambahan</span>`:''}</div><div class="top"><span class="pl">${x[1]}</span><span class="st"><i>${s[0]}</i>${s[1]}</span></div>
 <div class="m"><span>Umur SPK<b>${age===null?'-':age+' hari'}</b>${fd(x[0])}</span><span>TA<b>${x[3]?fd(x[3]):'-'}</b>${lt!==null&&lt>=0?lt+' hari dari SPK':''}</span><span>Item part<b>${x[6]}</b>${x[4]?'ETD '+fd(x[4]):''}</span></div>
 ${x[5]?`<div class="n">${x[5]}</div>`:''}
 <details><summary>Lihat daftar part</summary><ul>${x[7].split('|').filter(Boolean).map(i=>`<li>${i}</li>`).join('')}</ul></details></div>`}).join('')||'<p>Tidak ada data yang cocok.</p>'}
-function render(){kpi();status();draw()}
-async function load(){try{const r=await fetch(URL_CSV+'&_='+Date.now(),{cache:'no-store'});if(!r.ok)throw 0;const d=parse(csv(await r.text()));if(!d.length)throw 0;D=d;live=true;err=false;upd=new Date()}catch(e){if(live)err=true}render()}
+function render(){chips();kpi();status();draw()}
+async function load(){const res=await Promise.allSettled(TABS.map(async n=>{const r=await fetch(urlOf(n)+'&_='+Date.now(),{cache:'no-store'});if(!r.ok)throw 0;const t=await r.text();if(/^\s*</.test(t))throw 0;return t})),seen={},nb=[];let ok=0;
+res.forEach((r,i)=>{const n=TABS[i];if(r.status!='fulfilled'){nb.push(n);return}const t=r.value;if(t.trim()&&seen[t]){nb.push(n);return}seen[t]=n;cache[n]=parse(csv(t)).map(x=>x.concat(n));ok++});
+bad=nb;okN=ok;if(ok){D=merge([].concat(...TABS.map(n=>cache[n]||[])));live=true;upd=new Date()}render()}
+$('ins').onclick=e=>{if(e.target.dataset.i){ins=e.target.dataset.i;render()}};
 $('bar').onclick=e=>{if(e.target.dataset.f){f=e.target.dataset.f;draw()}};
 $('ed').onclick=e=>{if(e.target.id=='rf')load()};
-render();load();setInterval(load,60000);
+render();load();setInterval(load,120000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
 </script></body></html>
