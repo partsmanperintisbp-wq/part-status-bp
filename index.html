@@ -103,7 +103,7 @@ return out}
 const SID='1QuoJgbu_hpbP6kE3fu2Ox1ajt0GRnHbs8OFJuvKTso0';
 const TABS=['PRIBADI','RAMAYANA','OONA / ABDA','ASTRA B','MSIG','MEGA SYARIAH','TOB','ZURICH','ACA','SINARMAS','MAG','SOMPO','SAHABAT','HARTA','KSK / SUNDAY','RAMA SATRIA','RAKSA','TOKYO MARINE','PAN FIC','JASINDO','WAHANA TATA'];
 const urlOf=n=>'https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:csv&headers=0&sheet='+encodeURIComponent(n);
-let D=JSON.parse(document.getElementById('data').textContent).map(x=>x.concat('PRIBADI')),cache={},bad=[],okN=0,live=false,upd=null,f='x',q='',ins='all';
+let D=JSON.parse(document.getElementById('data').textContent).map(x=>x.concat('PRIBADI')),cache={},bad=[],emp=[],okN=0,live=false,upd=null,f='x',q='',ins='all';
 const NOW=()=>new Date(),day=(a,b)=>a&&b?Math.round((new Date(b)-new Date(a))/864e5):null;
 const fd=s=>s?new Date(s).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):'-';
 const ST={r:['SIAP','Part siap','var(--ok)'],t:['TUNGGU','Menunggu','var(--wt)'],b:['BELUM','Belum ada TA','var(--no)']};
@@ -120,7 +120,7 @@ const old=op.filter(x=>x[0]).sort((a,b)=>a[0]<b[0]?-1:1)[0],etd=A.filter(x=>x[4]
 $('kpi').innerHTML=[[A.length,'Unit'],[A.reduce((a,x)=>a+x[6],0),'Total item part'],[c('r'),'Part siap'],[c('t'),'Masih menunggu'],[c('b'),'Belum ada TA']].map(k=>`<div class="k"><b>${k[0]}</b><span>${k[1]}</span></div>`).join('');
 $('al').textContent=(ins=='all'?'Semua asuransi. ':ins+'. ')+(old?`Terlama belum tuntas: ${old[1]} sejak ${fd(old[0])} (${day(old[0],n)} hari).`:'Semua unit part sudah siap.')+(etd?` ETD terjauh: ${fd(etd[4])}, ${day(n,etd[4])} hari lagi.`:'')}
 function status(){const t=upd?upd.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}):'';
-$('ed').innerHTML='<div class="mode"><span>'+(live?`Terhubung ke spreadsheet: ${okN} dari ${TABS.length} tab terbaca. Terakhir diperbarui ${t}.`+(bad.length?' Tidak terbaca: '+bad.join(', ')+'.':''):'Spreadsheet tidak terbaca. Menampilkan data cadangan per 12 Okt 2026.')+'</span><button id="rf">Muat ulang</button></div>'}
+$('ed').innerHTML='<div class="mode"><span>'+(live?`Terhubung ke spreadsheet: ${okN} dari ${TABS.length} tab terbaca. Terakhir diperbarui ${t}.`+(emp.length?' Tanpa data: '+emp.join(', ')+'.':'')+(bad.length?' Tidak terbaca: '+bad.join(', ')+'.':''):'Spreadsheet tidak terbaca. Menampilkan data cadangan per 12 Okt 2026.')+'</span><button id="rf">Muat ulang</button></div>'}
 function chips(){const g={};D.forEach(x=>g[x[8]]=(g[x[8]]||0)+1);const n=D.length;
 $('ins').innerHTML=`<button data-i="all" class="${ins=='all'?'on':''}">Semua asuransi (${n})</button>`+Object.keys(g).map(k=>`<button data-i="${k}" class="${ins==k?'on':''}">${k} (${g[k]})</button>`).join('')}
 function draw(){const bar=$('bar');if(!bar.firstChild){bar.innerHTML=[['x','Semua status'],['r','Part siap'],['t','Menunggu'],['b','Belum ada TA']].map(a=>`<button data-f="${a[0]}">${a[1]}</button>`).join('')+'<input id="q" placeholder="Cari nopol atau nama part" aria-label="Cari">';$('q').oninput=e=>{q=e.target.value.toLowerCase();draw()}}
@@ -132,9 +132,9 @@ return `<div class="c" style="--s:${s[2]}"><div class="tg"><b>${x[8]}</b>${x[9]>
 ${x[5]?`<div class="n">${x[5]}</div>`:''}
 <details><summary>Lihat daftar part</summary><ul>${x[7].split('|').filter(Boolean).map(i=>`<li>${i}</li>`).join('')}</ul></details></div>`}).join('')||'<p>Tidak ada data yang cocok.</p>'}
 function render(){chips();kpi();status();draw()}
-async function load(){const res=await Promise.allSettled(TABS.map(async n=>{const r=await fetch(urlOf(n)+'&_='+Date.now(),{cache:'no-store'});if(!r.ok)throw 0;const t=await r.text();if(/^\s*</.test(t))throw 0;return t})),seen={},nb=[];let ok=0;
-res.forEach((r,i)=>{const n=TABS[i];if(r.status!='fulfilled'){nb.push(n);return}const t=r.value;if(t.trim()&&seen[t]){nb.push(n);return}seen[t]=n;cache[n]=parse(csv(t)).map(x=>x.concat(n));ok++});
-bad=nb;okN=ok;if(ok){D=merge([].concat(...TABS.map(n=>cache[n]||[])));live=true;upd=new Date()}render()}
+async function load(){const res=await Promise.allSettled(TABS.map(async n=>{const r=await fetch(urlOf(n)+'&_='+Date.now(),{cache:'no-store'});if(!r.ok)throw 'HTTP '+r.status;const t=await r.text();if(/^\s*</.test(t))throw 'akses ditolak atau nama tab salah';return t})),seen={},nb=[],em=[];let ok=0;
+res.forEach((r,i)=>{const n=TABS[i];if(r.status!='fulfilled'){nb.push(n+' ('+(r.reason&&r.reason.length?r.reason:'gagal dimuat')+')');return}const t=r.value,rw=parse(csv(t));if(rw.length&&seen[t]){nb.push(n+' (isi sama dengan '+seen[t]+', cek nama tab)');return}if(rw.length)seen[t]=n;else em.push(n);cache[n]=rw.map(x=>x.concat(n));ok++});
+bad=nb;emp=em;okN=ok;if(ok){D=merge([].concat(...TABS.map(n=>cache[n]||[])));live=true;upd=new Date()}render()}
 $('ins').onclick=e=>{if(e.target.dataset.i){ins=e.target.dataset.i;render()}};
 $('bar').onclick=e=>{if(e.target.dataset.f){f=e.target.dataset.f;draw()}};
 $('ed').onclick=e=>{if(e.target.id=='rf')load()};
