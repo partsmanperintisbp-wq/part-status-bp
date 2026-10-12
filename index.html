@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Part Stats Body &amp; Paint</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500;900&family=Oswald:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef1f0;--card:#fff;--ink:#12233d;--mu:#5a6676;--ln:#cfd6dc;--red:#d0021b;--ok:#2f6f4f;--wt:#b8741a;--no:#d0021b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1421;--card:#142036;--ink:#eaf0f7;--mu:#9aa8ba;--ln:#263650;--ok:#6fcf9d;--wt:#f0b254;--no:#ff5468}}
+:root[data-theme="dark"]{--bg:#0c1421;--card:#142036;--ink:#eaf0f7;--mu:#9aa8ba;--ln:#263650;--ok:#6fcf9d;--wt:#f0b254;--no:#ff5468}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 15px/1.5 "Noto Sans JP",system-ui,sans-serif}
+.tape{height:12px;background:repeating-linear-gradient(135deg,var(--red) 0 16px,#fff 16px 32px)}
+header{max-width:1200px;margin:auto;padding:24px 20px 6px;display:flex;gap:18px;align-items:center}
+.sun{width:56px;height:56px;border-radius:50%;background:var(--red);flex:none;box-shadow:0 0 0 5px var(--bg),0 0 0 7px var(--ink)}
+h1{margin:0;font:900 clamp(28px,6vw,46px)/1.05 "Noto Sans JP",sans-serif}
+h1 small{display:block;font:600 14px Oswald,sans-serif;letter-spacing:.12em;color:var(--mu);margin-top:6px}
+main{max-width:1200px;margin:auto;padding:12px 20px 40px}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:14px 0}
+.k{background:var(--card);border:2px solid var(--ink);border-radius:2px;padding:12px 14px}
+.k b{display:block;font:600 44px/1 Oswald,sans-serif}
+.k span{font-size:13px;font-weight:900;color:var(--mu)}
+.alert{background:var(--ink);color:var(--bg);padding:12px 16px;font-weight:900;margin-bottom:16px;border-left:10px solid var(--red)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+button,input{font:inherit;border:2px solid var(--ink);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:2px}
+button{font-weight:900;cursor:pointer}
+button.on{background:var(--ink);color:var(--bg)}
+input{flex:1;min-width:180px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.c{background:var(--card);border:1px solid var(--ln);border-left:10px solid var(--s);border-radius:2px;padding:14px}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.pl{font:600 22px Oswald,sans-serif;border:2px solid var(--ink);padding:1px 10px;letter-spacing:.06em}
+.st{border:3px double var(--s);color:var(--s);font-weight:900;font-size:12px;padding:3px 8px;transform:rotate(-4deg);text-align:center;line-height:1.25}
+.st i{display:block;font-style:normal;font-size:15px}
+.m{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:12px 0 4px;font-size:12px;color:var(--mu)}
+.m b{display:block;font-size:17px;color:var(--ink)}
+.n{font-size:13px;border-top:1px dashed var(--ln);padding-top:8px;margin-top:8px;font-weight:900}
+details{margin-top:8px;font-size:13px}
+summary{cursor:pointer;font-weight:900}
+ul{margin:6px 0 0;padding-left:18px}
+.ft{color:var(--mu);font-size:12px;margin-top:26px;line-height:1.7}
+dialog{border:3px solid var(--ink);background:var(--card);color:var(--ink);max-width:460px;width:92%;padding:16px}dialog::backdrop{background:#0008}dialog h2{margin:0;font-size:18px}label{display:block;font-size:12px;font-weight:900;margin:8px 0 2px}label input,label select,label textarea{width:100%;font:inherit;border:2px solid var(--ink);background:var(--bg);color:var(--ink);padding:6px 8px;border-radius:2px}.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.ed{margin-top:10px;font-size:13px;padding:5px 10px}.mode{padding:10px 14px;border:2px dashed var(--ink);margin-bottom:12px;font-weight:900;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}#em{color:var(--no);font-weight:900;font-size:13px;margin:8px 0 0}</style></head><body>
+<div class="tape"></div>
+<header><div class="sun"></div><h1>Status Part<small>BODY &amp; PAINT</small></h1></header>
+<main>
+<div class="kpi" id="kpi"></div>
+<div class="alert" id="al"></div>
+<div id='ed'></div>
+<div class="bar" id="bar"></div>
+<div class="grid" id="g"></div>
+
+<p class="ft">TA = tanggal part ready semua. ETD = estimasi tanggal kedatangan part lengkap. Format tanggal sumber (ddmmyy) sudah diubah ke tanggal biasa. Kolom A pada spreadsheet berisi arsip lama (sekitar 17 unit, 2022 sampai 2025) dan tidak ditampilkan. Data dibaca langsung dari spreadsheet PART STATS dan diperbarui otomatis setiap 1 menit. Status dihitung dari TA dan ETD: Part siap bila TA sudah terisi dan tidak ada item tambahan yang belum ada TA. Kolom A (arsip lama) tidak ditampilkan. Warna sel tidak dibaca.</p>
+</main>
+<script type='application/json' id='data'>[
+["2026-01-25","BK 1540 AFY","r","2026-01-27","","Spoiler terpakai ke BK 1618 PV. Hubungi Partman jika perlu pesan ulang.",3,"Moulding Bumper FR RH|Moulding Bumper RR RH|Spoiler Bumper FR"],
+["2026-02-22","BK 1522 AGN","r","2026-02-24","","",1,"Cover Foglamp LH"],
+["2026-04-06","BK 1994 AGP","r","2026-04-09","","",1,"Cover Foglamp LH"],
+["","BK 1283 AGE","r","2026-05-12","","",1,"Cover Foglamp RH"],
+["2026-05-19","BK 1954 VAA","r","2026-05-25","","",1,"Stoplamp LH"],
+["2026-05-22","BK 1994 AGP","t","2026-07-20","2026-11-19","Tambahan Member Lantai RR No.4 masih ditunggu.",74,"Bumper RR|Klip Kecil (4PCS)|Klip Bumper RR|Tutup Towing Bumper RR|Baut Gantungan Ban Serap|Spacer Gantungan Ban Serap|Lock Gantungan Ban Serap|Gantungan Ban Serap|Ban Serap DLPEN-18565-15|Retainer Bumper RR Tengah (3PCS)"],
+["2026-07-02","BB 1165 BL","r","2026-09-18","","Part tambahan datang bertahap. TA terakhir 18 Sep 2026.",64,"Bumper FR|Bumper FR Lower|Moulding Bumper FR RH|Cover Moulding Bumper FR RH|Headlamp RH|Breket Bumper FR RH|Fender RH|Cover Fender RH Dalam|Moulding Fender RH|Liner FR RH"],
+["2026-07-15","BK 1805 NJR","r","2026-07-17","","",12,"Cover Sein FR LH|Breket Bumper FR LH|Liner FR LH|Groomet Liner|Kap Mesin|Headlamp LH|Fender LH|Cover Cowl|Kaca Segitiga Fender LH|Sealer Kaca (2x)|Kaca Film Kaca Segitiga Fender LH"],
+["2026-08-06","BK 1863 AGP","r","2026-08-19","","Termasuk tambahan Ban Dunlop ENSV 21560-17.",15,"Spoiler Bumper FR|Bumper FR Lower|Tutup Bumper FR RH|Karet Bawah Bumper FR|Support Radiator Bawah|Liner FR RH|Cover Bawah Mesin FR|Klip Besar (6PCS)|Klip Kecil (3PCS)|Moulding Fender LH|Cover Moulding Fender LH|Liner FR LH|Velg FR LH|Pintu 1 LH|Ban Dunlop ENSV 21560-17"],
+["2026-07-08","BK 1775 ACL","t","2026-08-10","","Tambahan Headlamp LH (stok) belum ada TA.",8,"Spoiler Bumper FR|Cover Foglamp LH|Moulding Bumper FR LH|Cover Triplang LH|Stiker TRD Pintu LH|Bumper RR|Stiker TRD Pintu RH|Headlamp LH (tambahan stok)"],
+["2026-08-27","BK 7989 WAC","r","2026-09-01","","",1,"Klip Bumper FR LH"],
+["2026-08-26","BK 1672 ADR","t","2026-09-16","","Tambahan Tutup Grill FR RH belum ada TA.",5,"Bumper RR|Spoiler Bumper RR|Liner RR LH|Klip Kecil (4PCS)|Tutup Grill FR RH (tambahan)"],
+["2026-08-31","BK 1381 VAJ","r","2026-09-07","","",3,"Emblem Turbo Fender LH|Moulding Fender LH|Spion LH"],
+["2026-09-01","BK 1081 AGS","r","2026-09-04","","",12,"Headlamp LH|Kap Mesin|Engsel Kap Mesin LH|Fender LH|Groomet Liner (3PCS)|Liner FR LH|Cover Sein FR LH|Cover Foglamp LH|Foglamp LH|Bullhead LH|Breket Bumper FR LH|Baterai"],
+["2026-09-03","BK 138 ASN","r","2026-09-04","","",5,"Moulding Pintu 1 LH|Moulding Pintu 2 LH|Moulding Quarter LH|Bumper RR Lwr|Spoiler Bumper RR"],
+["2026-07-26","BK 1486 DEW","r","2026-09-07","","Termasuk tambahan Reflektor Bagasi LH.",13,"Spoiler Bumper FR|Moulding Bumper FR LH|Pintu Bagasi|Sealer Kaca|Bumper RR|Spoiler Bumper RR|Scuffplate Lower Back Panel|Karet Pintu Bagasi|Lower Back Panel Assy|Antena Electrical Key RR|Sensor RR LH|Liner RR RH No.2|Reflektor Bagasi LH"],
+["2026-09-04","BK 1563 AGO","r","2026-09-07","","",2,"Cover Sein FR LH|Sein FR LH"],
+["2026-09-04","BK 1283 AGE","r","2026-09-08","","",25,"Cover Foglamp LH|Grill FR|Tutup Towing FR LH|Tapak Logo FR|Logo FR|Headlamp LH|Headlamp RH|Inlet Filter Udara|Kotak Filter Udara|Cover Radiator Atas"],
+["2026-09-08","BK 1434 AGS","r","2026-09-17","","",3,"Bumper FR|Velg FR RH|Ban FR RH (BSTRZ-20520-17)"],
+["2026-09-09","BK 1472 XAG","r","2026-09-11","","",6,"Cover Foglamp LH|Bumper FR|Support Radiator Bawah|Kondensor AC|Cover Radiator LH|Grill FR"],
+["2026-09-09","BK 1645 AGI","r","2026-09-11","","",2,"Bumper RR|Breket Bumper RR RH"],
+["2026-09-12","BK 1855 AGT","r","2026-09-18","","",5,"Kaca Depan|Damkit Kaca FR|Sealer Kaca (2PCS)|Moulding Kaca FR|Kaca Film Kaca FR 3M"],
+["2026-09-12","BK 1865 AGG","r","2026-09-14","","",3,"Headlamp LH|Cover Foglamp LH|Klip Kecil (2PCS)"],
+["2026-09-15","BK 1114 MAJ","r","2026-09-16","","",2,"Moulding Fender RH|Cover Triplang LH"],
+["2026-09-19","BK 1541 AFV","b","","","Belum ada TA dan ETD.",3,"Cover Sein FR RH|Sein FR RH|Mudguard RR RH"],
+["2026-09-19","BK 1076 AGU","b","","","Belum ada TA dan ETD.",2,"Velg Serap|Ban Serap GTRCM-17565-14"]
+]</script>
+<script>
+function csv(t){const r=[];let row=[],c='',q=false;for(let i=0;i<t.length;i++){const ch=t[i];if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}else if(ch=='"')q=true;else if(ch==','){row.push(c);c=''}else if(ch=='\n'){row.push(c);r.push(row);row=[];c=''}else if(ch!='\r')c+=ch}row.push(c);r.push(row);return r}
+function dt(t){t=t||'';let d,m,y,k=t.match(/(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})/);if(k){d=k[1];m=k[2];y=k[3]}else{const s=t.replace(/\D/g,'');if(s.length==6){d=s.slice(0,2);m=s.slice(2,4);y=s.slice(4)}else return ''}
+y=y.length==2?'20'+y:y;if(+m<1||+m>12||+d<1||+d>31)return '';return y+'-'+m.padStart(2,'0')+'-'+d.padStart(2,'0')}
+function parse(g){const out=[];const r0=g.findIndex(r=>r.some((v,i)=>i>0&&/^SPK\s*TGL/i.test((v||'').trim())));if(r0<0)return out;
+const W=Math.max(...g.map(r=>r.length));
+for(let c=1;c<W;c++){const col=g.slice(r0).map(r=>(r[c]||'').trim());if(!/^SPK/i.test(col[0]))continue;
+const pm=(col[1]||'').match(/[A-Z]{1,2}\s*\d{1,4}\s*[A-Z]{1,3}/),plate=pm?pm[0].replace(/\s+/g,' '):(col[1]||'-');
+let parts=[],ta='',etd='',notes=[],pend=0;
+for(const x of col.slice(2)){if(!x)continue;
+if(/^TA\b/i.test(x)){const d=dt(x);if(d>ta)ta=d;pend=0;continue}
+if(/^ETD/i.test(x)){etd=dt(x);continue}
+if(/^TAMBAHAN/i.test(x)){if(/STOCK|STOK/i.test(x))notes.push('Tambahan dari stok.');continue}
+if(/HUBUNGI|PESAN ULANG|TERPAKAI/i.test(x)){notes.push(x);continue}
+parts.push(x);pend++}
+const st=!ta?(etd?'t':'b'):(pend>0||etd?'t':'r');
+if(st=='t'&&pend>0)notes.push(pend+' item tambahan belum ada TA.');
+if(st=='b'&&!etd)notes.push('Belum ada TA dan ETD.');
+out.push([dt(col[0]),plate,st,ta,etd,notes.join(' '),parts.length,parts.join('|')])}
+return out}
+const SID='1QuoJgbu_hpbP6kE3fu2Ox1ajt0GRnHbs8OFJuvKTso0',GID='0';
+const URL_CSV='https://docs.google.com/spreadsheets/d/'+SID+'/gviz/tq?tqx=out:csv&headers=0&gid='+GID;
+let D=JSON.parse(document.getElementById('data').textContent),live=false,upd=null,err=false,f='x',q='';
+const NOW=()=>new Date(),day=(a,b)=>a&&b?Math.round((new Date(b)-new Date(a))/864e5):null;
+const fd=s=>s?new Date(s).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}):'-';
+const ST={r:['SIAP','Part siap','var(--ok)'],t:['TUNGGU','Menunggu','var(--wt)'],b:['BELUM','Belum ada TA','var(--no)']};
+const $=i=>document.getElementById(i);
+function kpi(){const c=s=>D.filter(x=>x[2]==s).length,op=D.filter(x=>x[2]!='r'),n=NOW();
+const old=op.filter(x=>x[0]).sort((a,b)=>a[0]<b[0]?-1:1)[0],etd=D.filter(x=>x[4]&&day(n,x[4])>=0).sort((a,b)=>a[4]<b[4]?1:-1)[0];
+$('kpi').innerHTML=[[D.length,'Unit di papan'],[D.reduce((a,x)=>a+x[6],0),'Total item part'],[c('r'),'Part siap'],[c('t'),'Masih menunggu'],[c('b'),'Belum ada TA']].map(k=>`<div class="k"><b>${k[0]}</b><span>${k[1]}</span></div>`).join('');
+$('al').textContent=(old?`Terlama belum tuntas: ${old[1]} sejak ${fd(old[0])} (${day(old[0],n)} hari).`:'Semua unit part sudah siap.')+(etd?` ETD terjauh: ${fd(etd[4])}, ${day(n,etd[4])} hari lagi.`:'')}
+function status(){const t=upd?upd.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}):'';
+$('ed').innerHTML='<div class="mode"><span>'+(live?'Terhubung ke spreadsheet. Terakhir diperbarui '+t+(err?' (gagal menyegarkan, memakai data sebelumnya).':'.'):'Spreadsheet tidak terbaca. Menampilkan data cadangan per 12 Okt 2026.')+'</span><button id="rf">Muat ulang</button></div>'}
+function draw(){const bar=$('bar');if(!bar.firstChild){bar.innerHTML=[['x','Semua'],['r','Part siap'],['t','Menunggu'],['b','Belum ada TA']].map(a=>`<button data-f="${a[0]}">${a[1]}</button>`).join('')+'<input id="q" placeholder="Cari nopol atau nama part" aria-label="Cari">';$('q').oninput=e=>{q=e.target.value.toLowerCase();draw()}}
+bar.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.f==f));
+const rk={b:0,t:1,r:2},n=NOW(),L=D.filter(x=>(f=='x'||x[2]==f)&&(x[1]+x[7]).toLowerCase().includes(q)).sort((a,b)=>rk[a[2]]-rk[b[2]]||(a[2]=='r'?(b[0]>a[0]?1:-1):(a[0]<b[0]?-1:1)));
+$('g').innerHTML=L.map(x=>{const s=ST[x[2]],lt=day(x[0],x[3]),age=day(x[0],n);
+return `<div class="c" style="--s:${s[2]}"><div class="top"><span class="pl">${x[1]}</span><span class="st"><i>${s[0]}</i>${s[1]}</span></div>
+<div class="m"><span>Umur SPK<b>${age===null?'-':age+' hari'}</b>${fd(x[0])}</span><span>TA<b>${x[3]?fd(x[3]):'-'}</b>${lt!==null&&lt>=0?lt+' hari dari SPK':''}</span><span>Item part<b>${x[6]}</b>${x[4]?'ETD '+fd(x[4]):''}</span></div>
+${x[5]?`<div class="n">${x[5]}</div>`:''}
+<details><summary>Lihat daftar part</summary><ul>${x[7].split('|').filter(Boolean).map(i=>`<li>${i}</li>`).join('')}</ul></details></div>`}).join('')||'<p>Tidak ada data yang cocok.</p>'}
+function render(){kpi();status();draw()}
+async function load(){try{const r=await fetch(URL_CSV+'&_='+Date.now(),{cache:'no-store'});if(!r.ok)throw 0;const d=parse(csv(await r.text()));if(!d.length)throw 0;D=d;live=true;err=false;upd=new Date()}catch(e){if(live)err=true}render()}
+$('bar').onclick=e=>{if(e.target.dataset.f){f=e.target.dataset.f;draw()}};
+$('ed').onclick=e=>{if(e.target.id=='rf')load()};
+render();load();setInterval(load,60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
+</script></body></html>
